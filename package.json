@@ -1,0 +1,17 @@
+{
+  "name": "nnn",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "echo \"run biuld!!!\"",
+    "lint": "echo \"run lint!!!\""
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "prompts": "^0.1.12"
+  }
+}
