@@ -22,3 +22,10 @@ Or you can use `go get` (you need to use go1.8 or later),
 ```bash
 $ go get -u github.com/bryutus/kivu
 ```
+
+Or you can use `brew install`
+
+```bash
+$ brew tap bryutus/kivu
+$ brew install kivu
+```
