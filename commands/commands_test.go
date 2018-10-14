@@ -2,9 +2,31 @@ package commands
 
 import (
 	"reflect"
-	"sort"
 	"testing"
 )
+
+func TestExtractKeys(t *testing.T) {
+	in := `
+{
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "echo \"run biuld!!!\"",
+    "lint": "echo \"run lint!!!\""
+}
+`
+	got := extractKeys(in)
+
+	want := []string{"test", "build", "lint"}
+
+	if !reflect.DeepEqual(got, want) {
+		t.Errorf(
+			"extractKeys(%s) => \ngot %v, \nwant %v",
+			in,
+			got,
+			want,
+		)
+	}
+
+}
 
 func TestListSelects(t *testing.T) {
 	in := property{
@@ -16,11 +38,9 @@ func TestListSelects(t *testing.T) {
 		},
 	}
 
-	got, _ := listSelects(in)
+	keys := []string{"build", "build:babel", "clean", "lint"}
 
-	sort.Slice(got, func(i, j int) bool {
-		return got[i].Alias < got[j].Alias
-	})
+	got, _ := listSelects(in, keys)
 
 	want := []script{
 		{Alias: "build", Command: "npm-run-all clean lint build:babel"},
@@ -31,8 +51,9 @@ func TestListSelects(t *testing.T) {
 
 	if !reflect.DeepEqual(got, want) {
 		t.Errorf(
-			"listSelects(%s) => \ngot %q, \nwant %q",
+			"listSelects(%s, %v) => \ngot %q, \nwant %q",
 			in,
+			keys,
 			got,
 			want,
 		)

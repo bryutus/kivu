@@ -1,12 +1,14 @@
 package commands
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"log"
 	"os"
 	"os/exec"
+	"regexp"
 
 	"github.com/manifoldco/promptui"
 	"github.com/urfave/cli"
@@ -14,6 +16,10 @@ import (
 
 type property struct {
 	Scripts map[string]string `json:"scripts"`
+}
+
+type lazyloadProperty struct {
+	Scripts json.RawMessage `json:"scripts"`
 }
 
 type script struct {
@@ -34,7 +40,26 @@ var Action = func(c *cli.Context) error {
 		os.Exit(1)
 	}
 
-	selects, err := listSelects(property)
+	var lazyload lazyloadProperty
+	if err := json.Unmarshal(in, &lazyload); err != nil {
+		log.Fatalln("Failed to parse package.json:", err)
+		os.Exit(1)
+	}
+
+	var buf bytes.Buffer
+	if err := json.Indent(&buf, lazyload.Scripts, "", "  "); err != nil {
+		log.Fatalln("Failed to parse package.json:", err)
+		os.Exit(1)
+	}
+	scriptsJSON := buf.String()
+
+	keys := extractKeys(scriptsJSON)
+
+	selects, err := listSelects(property, keys)
+	if err != nil {
+		log.Fatalln("Failed to make selects:", err)
+		os.Exit(1)
+	}
 
 	templates := &promptui.SelectTemplates{
 		Label:    "{{ . }}?",
@@ -69,12 +94,21 @@ var Action = func(c *cli.Context) error {
 	return nil
 }
 
-func listSelects(p property) (selects []script, err error) {
+func extractKeys(s string) (keys []string) {
+	r := regexp.MustCompile(`(?m)"(.+)":`)
+	matched := r.FindAllStringSubmatch(s, -1)
+	for _, v := range matched {
+		keys = append(keys, v[1])
+	}
+	return
+}
+
+func listSelects(p property, orderKeys []string) (selects []script, err error) {
 	selects = []script{}
-	for k, v := range p.Scripts {
+	for _, key := range orderKeys {
 		var script script
-		script.Alias = k
-		script.Command = v
+		script.Alias = key
+		script.Command = p.Scripts[key]
 		selects = append(selects, script)
 	}
 	return
