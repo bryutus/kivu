@@ -45,7 +45,7 @@ func newApp() *cli.App {
 	app.CustomAppHelpTemplate = AppHelpTemplate
 	app.Name = "kivu"
 	app.Usage = "Select npm run script."
-	app.Version = "0.1.0"
+	app.Version = "v0.1.1"
 	app.Author = "bryutus"
 	app.Email = "bryutus@gmail.com"
 	app.Action = commands.Action
