@@ -3,6 +3,7 @@
 [![CircleCI](https://circleci.com/gh/bryutus/kivu/tree/master.svg?style=shield)](https://circleci.com/gh/bryutus/kivu/tree/master)
 [![Packagist](https://img.shields.io/packagist/l/doctrine/orm.svg)](https://github.com/bryutus/kivu/blob/master/LICENSE)
 
+![demo](https://github.com/bryutus/kivu/blob/media/media/kivu.gif)
 
 ## Usage
 Please run the following command where there are package.json.
